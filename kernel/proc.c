@@ -146,6 +146,7 @@ found:
   p->context.ra = (uint64)forkret;
   p->context.sp = p->kstack + PGSIZE;
 
+  p->trace_mask = 0;
   return p;
 }
 
@@ -296,11 +297,16 @@ fork(void)
   }
   np->sz = p->sz;
 
+  // Copy the trace mask
+  np->trace_mask = p->trace_mask;
+  
   // copy saved user registers.
   *(np->trapframe) = *(p->trapframe);
 
   // Cause fork to return 0 in the child.
   np->trapframe->a0 = 0;
+
+  
 
   // increment reference counts on open file descriptors.
   for(i = 0; i < NOFILE; i++)
